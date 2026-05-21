@@ -3,75 +3,112 @@ package PacoteSuperProtegido;
 import robocode.*;
 import robocode.AdvancedRobot;
 import java.awt.*;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Robozinho extends AdvancedRobot
-{
+public class Robozinho extends AdvancedRobot {
+
+	// Lógica baseada na quantidade de robôs inimigos presente na Arena.
 	Set<String> inimigosVistos = new HashSet<String>();
 
-	HashMap<String, Double> saudeInimigos = new HashMap<>();
-
 	public void run() {
+		coresDoRobo();
 
-		setColors(Color.red,Color.blue,Color.green);
+		// O Radar fica independente do Canhão, metodo especifico do AdvancedRobot;
+		setAdjustRadarForRobotTurn(true);
+		setAdjustGunForRobotTurn(true);
 
-		while(true) {
-			// Replace the next 4 lines with any behavior you would like
-			ahead(100); // ir para frente
-			turnGunRight(360); 
-			back(100);
-			turnGunRight(360);
+		while (true) {
+
+			setTurnRadarRight(360);
+
+			switch (inimigosVistos.size()) {
+				case 1:
+					// Lógica para o 1v1
+					// estrategiaDuelo();
+					break;
+				case 2:
+					// estrategiaTwoEnemy();
+					break;
+				case 3:
+					// estrategiaThreeEnemy();
+					break;
+				default:
+					// estrategiaSobrevivencia();
+					// Estratégia para enfrentar mais de 3 inimigos.
+					break;
+
+			}
+			// Execute é para executar o metodo set em todos os rounds.
+			execute();
 		}
 	}
 
-	/**
-	 * onScannedRobot: What to do when you see another robot
-	 */
+	// Evento para quando o robô for o campeão da rodada.
+	public void onWin() {
+		for (int i = 0; i < 50; i++) {
+			turnRight(30);
+			turnLeft(30);
+			setAllColors(Color.getHSBColor((i+45), (i*2), (i*5)));
+		}
+	}
+
+	// Evento para quando o nosso robô escanear outro robô;
 	public void onScannedRobot(ScannedRobotEvent inimigo) {
-		int quantidade = contaInimigos(inimigo);
-		if(quantidade >= 4){
-			fire(1);
-			System.out.println("Fire 1");
-		}else if(quantidade >= 2){
-			fire(1.5);
-			System.out.println("Fire 1.5");
-		}else if(quantidade >= 1){
-			fire(2);
-			System.out.println("Fire 2");
-		}
+		inimigosVistos.add(inimigo.getName());
+		System.out.print("Avistei esse robô: " + inimigo.getName());
+		System.out.println("Inimigos avistados: " + inimigosVistos.size());
 	}
 
-	/**
-	 * onHitByBullet: What to do when you're hit by a bullet
-	 */
+	// Evento para quando o nosso robô for atingido por uma bala.
 	public void onHitByBullet(HitByBulletEvent e) {
 		// Replace the next line with any behavior you would like
-		back(10);
+		back(40);
 
 	}
-	
-	/**
-	 * onHitWall: What to do when you hit a wall
-	 */
+
+	// Evento para quando o nosso robô colidir com outro robô.
+	public void onHitRobot(HitRobotEvent e) {
+		// Se batermos de frente, atira com força MÁXIMA porque a chance de acertar é 100%
+		if (e.getBearing() > -10 && e.getBearing() < 10) {
+			fire(3);
+		}
+		back(50);
+	}
+
+	// Evento para quando o nosso robô atingir uma parade.
 	public void onHitWall(HitWallEvent e) {
-		// Replace the next line with any behavior you would like
 		back(20);
 	}
 
-	public int contaInimigos(ScannedRobotEvent inimigo){
-		inimigosVistos.add(inimigo.getName());
-		String UltimoNome = null;
-		for(String nome : inimigosVistos ) {
-			UltimoNome = nome;
-		}
-		saudeInimigos.put(UltimoNome, inimigo.getEnergy());
-
-		if(saudeInimigos.get(UltimoNome) < 0){
-			inimigosVistos.remove(UltimoNome);
-		}
-
-		return inimigosVistos.size();
+	// Evento para quando o nosso robô acertar um tiro em outro robô.
+	public void onBulletHit(BulletHitEvent e) {
+		System.out.println("Acertei um tiro no " + e.getName() + "!");
+		System.out.println("Minha energia subiu para: " + getEnergy());
 	}
+
+	// Evento para quando o nosso robô errar um tiro.
+	public void onBulletMissed(BulletMissedEvent e) {
+		System.out.println("Putz, errei o tiro. Melhor me aproximar antes de atirar de novo.");
+	}
+
+	// Evento de quando o nosso robô identifica pela arena um robo morto.
+	public void onRobotDeath(RobotDeathEvent robotDeathEvent) {
+		inimigosVistos.remove(robotDeathEvent.getName());
+		// Imprime no console quem morreu e quantos inimigos conhecidos restam
+		System.out.println("O robô " + robotDeathEvent.getName() + " foi destruído!");
+		System.out.println("Agora restam " + inimigosVistos.size() + " inimigos na minha lista.");
+	}
+
+	public void coresDoRobo(){
+		setColors(Color.red,Color.black,Color.white);
+	}
+
+	public void estrategiaDuelo(){}
+
+	public void estrategiaTwoEnemy(){}
+
+	public void estrategiaThreeEnemy(){}
+
+	public void estrategiaSobrevivencia(){}
 }
