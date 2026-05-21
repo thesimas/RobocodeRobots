@@ -1,69 +1,47 @@
-🤖 Robocode: Robozinho
+# 🤖 Robocode: Projeto Robozinho
 
-Este repositório contém o código-fonte de um robô desenvolvido para o simulador Robocode. O projeto foi criado com o propósito duplo de estudar a API do Robocode em Java e praticar fluxos de trabalho com o Git.
+Este repositório contém o código-fonte do **Robozinho**, um tanque de batalha autônomo desenvolvido para o simulador Robocode em Java.
 
-🚀 Sobre o Projeto
+Este projeto tem fins acadêmicos e visa o estudo prático de Programação Orientada a Objetos (POO), Estruturas de Dados e, principalmente, o fluxo de versionamento colaborativo utilizando **Git e GitHub**.
 
-O Robocode é um jogo de programação onde o objetivo é desenvolver um tanque de batalha robô para lutar contra outros tanques em Java ou .NET. As batalhas ocorrem em tempo real e na tela.
-Objetivos de Aprendizado:
+---
 
-    Java: Implementação de herança, sobrescrita de métodos e lógica de eventos.
+## 🎯 O que está sendo desenvolvido
+Estamos desenvolvendo um robô inteligente que não apenas atira cegamente, mas que mapeia a arena e adapta seu comportamento. O robô herda as propriedades da classe `AdvancedRobot`, o que permite a execução de ações assíncronas (como girar o radar independentemente do canhão) e tomadas de decisão complexas.
 
-    Git: Versionamento de código, uso de commits semânticos e gestão de branches.
+### 🧠 Conceitos e Lógicas Aplicadas
+* **Máquina de Estados (State Machine):** O robô utiliza uma estrutura de `switch-case` baseada na quantidade de inimigos vivos. Isso permite que ele alterne entre diferentes estratégias (ex: modo de sobrevivência contra muitos inimigos, e agressividade no modo duelo "1 contra 1").
+* **Programação Orientada a Eventos:** O comportamento do robô reage ativamente ao ambiente através de métodos ouvintes, como:
+    * `onScannedRobot`: Para rastrear inimigos.
+    * `onRobotDeath`: Para atualizar o mapa de batalha quando um oponente é eliminado.
+    * `onHitWall` / `onHitByBullet`: Para rotinas de evasão e defesa.
 
-    Estratégia: Desenvolvimento de algoritmos de movimentação e mira.
+### 📦 Estrutura de Dados Utilizada
+Para gerenciar o número de inimigos na arena, implementamos a interface **`Set`** utilizando a classe **`HashSet<String>`**.
+* **Por que o HashSet?** O radar do Robocode varre o mesmo robô dezenas de vezes por segundo. O `HashSet` é uma coleção que **não permite elementos duplicados**. Assim, quando adicionamos o nome de um inimigo rastreado (`inimigosVistos.add(nome)`), garantimos que cada robô seja contabilizado apenas uma vez, mantendo uma contagem precisa de quantos oponentes únicos estão na arena.
 
-🛠️ Tecnologias Utilizadas
+---
 
-    Linguagem: Java
+## 🛠️ Fluxo de Trabalho com Git (Para o Professor e Equipe)
+Abaixo está o guia de comandos Git essenciais utilizados no ciclo de desenvolvimento e atualização deste projeto.
 
-    Ambiente: [Ex: IntelliJ IDEA / Eclipse / VS Code]
+### 1. Obtendo o Projeto (Primeiro Passo)
+Para que os membros da equipe possam baixar o projeto em suas máquinas locais:
+```bash
+# Clona o repositório para o computador local
+git clone https://github.com/thesimas/RobocodeRobots.git
 
-    Versionamento: Git & GitHub
+# Baixa e mescla as alterações mais recentes do repositório remoto
+git pull origin main
 
-    Motor de Batalha: Robocode API
+# Cria uma nova branch chamada 'colaborador' e já muda para ela
+git checkout -b colaborador
 
-📈 Evolução e Versionamento
+# Verifica quais arquivos foram modificados (Sempre bom rodar para conferir)
+git status
 
-Neste projeto, utilizei o Git para registrar cada melhoria na lógica do robô. Você pode conferir o histórico de commits para visualizar a evolução de:
+# Prepara todos os arquivos modificados para o próximo commit
+git add .
 
-    Setup Inicial: Configuração básica da classe estendendo Robot.
-
-    Movimentação: Implementação de padrões de movimento (ex: Square, Wall-Smoothing).
-
-    Sistema de Mira: Lógica para detecção e disparo contra inimigos.
-
-    Gestão de Energia: Refinamento para evitar gastos desnecessários de munição.
-
-🎮 Como Executar
-
-    Instale o Robocode: Baixe em robocode.sourceforge.io.
-
-    Clone este repositório:
-    Bash
-
-    git clone https://github.com/thesimas/RobocodeRobots.git
-
-    Compile o código: Certifique-se de incluir o robocode.jar no seu classpath.
-
-    Importe no Jogo:
-
-        Abra o Robocode.
-
-        Vá em Options -> Preferences -> Development Options.
-
-        Adicione o caminho da pasta onde o código foi compilado.
-
-    Batalhe: Adicione o seu robô em uma nova batalha (Battle -> New).
-
-📝 Comandos Git Praticados
-
-Durante o desenvolvimento, foram exercitados os seguintes comandos:
-
-    git status : Para verificar alterações.
-
-    git add . : Para preparar os arquivos.
-
-    git commit -m "feat: descrição": Para registrar o progresso.
-
-    git log --oneline: Para visualizar o histórico de forma concisa.
+# Salva uma "fotografia" do código com uma mensagem clara sobre o que foi feito
+git commit -m "Identifique bem esse commit em"
