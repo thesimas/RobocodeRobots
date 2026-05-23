@@ -74,6 +74,19 @@ public class Robozinho extends AdvancedRobot {
 
 		setTurnRadarRightRadians(
 				Utils.normalRelativeAngle(radarTurn) * 2);
+
+		double firePower = Math.min(3.0, Math.max(1.2, 400 / inimigo.getDistance())); // tiro com distancia
+
+		double energiaAnterior = ultimaEnergia.getOrDefault(
+				inimigo.getName(),
+				inimigo.getEnergy()); // desvia quando o inimigo atira
+
+		double deltaEnergia = energiaAnterior - inimigo.getEnergy();
+
+		ultimaEnergia.put(
+				inimigo.getName(),
+				inimigo.getEnergy());
+
 		inimigosVistos.add(inimigo.getName());
 		System.out.print("Avistei esse robô: " + inimigo.getName());
 		System.out.println("Inimigos avistados: " + inimigosVistos.size());
@@ -98,7 +111,8 @@ public class Robozinho extends AdvancedRobot {
 
 	// Evento para quando o nosso robô atingir uma parade.
 	public void onHitWall(HitWallEvent e) {
-		back(20);
+		back(20)
+		turnRight(90);
 	}
 
 	// Evento para quando o nosso robô acertar um tiro em outro robô.
