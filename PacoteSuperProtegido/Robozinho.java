@@ -5,11 +5,21 @@ import robocode.AdvancedRobot;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
+import robocode.util.Utils;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Robozinho extends AdvancedRobot {
 
 	// Lógica baseada na quantidade de robôs inimigos presente na Arena.
 	Set<String> inimigosVistos = new HashSet<String>();
+
+	// Memória dos inimigos
+	Map<String, Double> ultimaEnergia = new HashMap<String, Double>();
+	Map<String, Double> ultimoHeading = new HashMap<String, Double>();
+
+	// Controle de movimentação
+	int direcao = 1;
 
 	public void run() {
 		coresDoRobo();
@@ -20,7 +30,10 @@ public class Robozinho extends AdvancedRobot {
 
 		while (true) {
 
-			setTurnRadarRight(360);
+			setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
+
+			setTurnRight(35 * direcao);
+			setAhead(140 * direcao);
 
 			switch (inimigosVistos.size()) {
 				case 1:
@@ -49,12 +62,18 @@ public class Robozinho extends AdvancedRobot {
 		for (int i = 0; i < 50; i++) {
 			turnRight(30);
 			turnLeft(30);
-			setAllColors(Color.getHSBColor((i+45), (i*2), (i*5)));
+			setAllColors(Color.getHSBColor((i + 45), (i * 2), (i * 5)));
 		}
 	}
 
 	// Evento para quando o nosso robô escanear outro robô;
 	public void onScannedRobot(ScannedRobotEvent inimigo) {
+		double radarTurn = getHeadingRadians()
+				+ inimigo.getBearingRadians()
+				- getRadarHeadingRadians();
+
+		setTurnRadarRightRadians(
+				Utils.normalRelativeAngle(radarTurn) * 2);
 		inimigosVistos.add(inimigo.getName());
 		System.out.print("Avistei esse robô: " + inimigo.getName());
 		System.out.println("Inimigos avistados: " + inimigosVistos.size());
@@ -69,7 +88,8 @@ public class Robozinho extends AdvancedRobot {
 
 	// Evento para quando o nosso robô colidir com outro robô.
 	public void onHitRobot(HitRobotEvent e) {
-		// Se batermos de frente, atira com força MÁXIMA porque a chance de acertar é 100%
+		// Se batermos de frente, atira com força MÁXIMA porque a chance de acertar é
+		// 100%
 		if (e.getBearing() > -10 && e.getBearing() < 10) {
 			fire(3);
 		}
@@ -100,15 +120,19 @@ public class Robozinho extends AdvancedRobot {
 		System.out.println("Agora restam " + inimigosVistos.size() + " inimigos na minha lista.");
 	}
 
-	public void coresDoRobo(){
-		setColors(Color.red,Color.black,Color.white);
+	public void coresDoRobo() {
+		setColors(Color.red, Color.black, Color.white);
 	}
 
-	public void estrategiaDuelo(){}
+	public void estrategiaDuelo() {
+	}
 
-	public void estrategiaTwoEnemy(){}
+	public void estrategiaTwoEnemy() {
+	}
 
-	public void estrategiaThreeEnemy(){}
+	public void estrategiaThreeEnemy() {
+	}
 
-	public void estrategiaSobrevivencia(){}
+	public void estrategiaSobrevivencia() {
+	}
 }
