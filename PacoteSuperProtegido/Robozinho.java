@@ -87,6 +87,79 @@ public class Robozinho extends AdvancedRobot {
 				inimigo.getName(),
 				inimigo.getEnergy());
 
+		double enemyHeading = inimigo.getHeadingRadians(); // mira conforme o histórico do inimigo (preditiva)
+
+		double enemyVelocity = inimigo.getVelocity();
+
+		double enemyX = getX()
+				+ Math.sin(
+						getHeadingRadians()
+								+ inimigo.getBearingRadians())
+						* inimigo.getDistance();
+
+		double enemyY = getY()
+				+ Math.cos(
+						getHeadingRadians()
+								+ inimigo.getBearingRadians())
+						* inimigo.getDistance();
+
+		double bulletSpeed = 20 - firePower * 3;
+
+		double tempo = inimigo.getDistance() / bulletSpeed;
+
+		double headingAnterior = ultimoHeading.getOrDefault(
+				inimigo.getName(),
+				enemyHeading);
+
+		double mudancaHeading = Utils.normalRelativeAngle(
+				enemyHeading - headingAnterior);
+
+		ultimoHeading.put(
+				inimigo.getName(),
+				enemyHeading);
+
+		double predictedX = enemyX;
+		double predictedY = enemyY;
+
+		double predictedHeading = enemyHeading;
+
+		for (int i = 0; i < tempo; i++) {
+
+			predictedX += Math.sin(predictedHeading)
+					* enemyVelocity;
+
+			predictedY += Math.cos(predictedHeading)
+					* enemyVelocity;
+
+			predictedHeading += mudancaHeading;
+
+			predictedX = Math.max(
+					18,
+					Math.min(
+							getBattleFieldWidth() - 18,
+							predictedX));
+
+			predictedY = Math.max(
+					18,
+					Math.min(
+							getBattleFieldHeight() - 18,
+							predictedY));
+		}
+
+		double anguloAbsoluto = Math.atan2(
+				predictedX - getX(),
+				predictedY - getY());
+
+		double gunTurn = Utils.normalRelativeAngle(
+				anguloAbsoluto
+						- getGunHeadingRadians());
+
+		setTurnGunRightRadians(gunTurn);
+
+		if (Math.abs(getGunTurnRemaining()) < 10) {
+			fire(firePower);
+		} // fim da mira preditiva
+
 		inimigosVistos.add(inimigo.getName());
 		System.out.print("Avistei esse robô: " + inimigo.getName());
 		System.out.println("Inimigos avistados: " + inimigosVistos.size());
