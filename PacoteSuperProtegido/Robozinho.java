@@ -3,16 +3,17 @@ package PacoteSuperProtegido;
 import robocode.*;
 import robocode.AdvancedRobot;
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
 import robocode.util.Utils;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Robozinho extends AdvancedRobot {
 
 	// Lógica baseada na quantidade de robôs inimigos presente na Arena.
 	Set<String> inimigosVistos = new HashSet<String>();
+	// a função nativa do Robocode getOrders(), escaneia de forma mais precisa.
 
 	// Memória dos inimigos
 	Map<String, Double> ultimaEnergia = new HashMap<String, Double>();
@@ -32,25 +33,23 @@ public class Robozinho extends AdvancedRobot {
 
 			setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
 
-			setTurnRight(35 * direcao);
-			setAhead(140 * direcao);
+//			setTurnRight(35 * direcao);
+//			setAhead(140 * direcao);
 
-			switch (inimigosVistos.size()) {
+			switch (getOthers()) {
 				case 1:
-					// Lógica para o 1v1
-					// estrategiaDuelo();
+					estrategiaDuelo();
 					break;
 				case 2:
-					// estrategiaTwoEnemy();
+					estrategiaTwoEnemy();
 					break;
 				case 3:
-					// estrategiaThreeEnemy();
+					estrategiaThreeEnemy();
 					break;
 				default:
-					// estrategiaSobrevivencia();
+					estrategiaSobrevivencia();
 					// Estratégia para enfrentar mais de 3 inimigos.
 					break;
-
 			}
 			// Execute é para executar o metodo set em todos os rounds.
 			execute();
@@ -58,7 +57,7 @@ public class Robozinho extends AdvancedRobot {
 	}
 
 	// Evento para quando o robô for o campeão da rodada.
-	public void onWin() {
+	public void onWin(WinEvent event) {
 		for (int i = 0; i < 50; i++) {
 			turnRight(30);
 			turnLeft(30);
@@ -81,7 +80,7 @@ public class Robozinho extends AdvancedRobot {
 				inimigo.getName(),
 				inimigo.getEnergy()); // desvia quando o inimigo atira
 
-		double deltaEnergia = energiaAnterior - inimigo.getEnergy();
+//		double deltaEnergia = energiaAnterior - inimigo.getEnergy();
 
 		ultimaEnergia.put(
 				inimigo.getName(),
@@ -167,9 +166,7 @@ public class Robozinho extends AdvancedRobot {
 
 	// Evento para quando o nosso robô for atingido por uma bala.
 	public void onHitByBullet(HitByBulletEvent e) {
-		// Replace the next line with any behavior you would like
 		back(40);
-
 	}
 
 	// Evento para quando o nosso robô colidir com outro robô.
@@ -184,7 +181,7 @@ public class Robozinho extends AdvancedRobot {
 
 	// Evento para quando o nosso robô atingir uma parade.
 	public void onHitWall(HitWallEvent e) {
-		back(20)
+		back(20);
 		turnRight(90);
 	}
 
@@ -212,14 +209,58 @@ public class Robozinho extends AdvancedRobot {
 	}
 
 	public void estrategiaDuelo() {
+		// Muda a direção a cada 20 rodadas (ticks) de forma imprevisível
+		if (getTime() % 20 == 0) {
+			direcao = -direcao; // Inverte entre andar para frente (1) e para trás (-1)
+		}
+
+		// Move-se em arcos fechados e rápidos (zigue-zague)
+		setAhead(100 * direcao);
+		setTurnRight(45);
 	}
 
 	public void estrategiaTwoEnemy() {
+		// Demora um pouco mais para mudar de direção (35 ticks)
+		if (getTime() % 35 == 0) {
+			direcao = -direcao;
+		}
+
+		// Passos maiores e arco de curva um pouco mais aberto
+		setAhead(150 * direcao);
+		setTurnRight(60);
 	}
 
 	public void estrategiaThreeEnemy() {
+		// Curvas mais suaves para manter uma velocidade alta contínua
+		if (getTime() % 40 == 0) {
+			direcao = -direcao;
+		}
+
+		// Corre grandes distâncias (200) com curvas leves (30 graus)
+		setAhead(200 * direcao);
+		setTurnRight(30);
 	}
 
 	public void estrategiaSobrevivencia() {
+		// Descobre as coordenadas exatas do centro da arena
+		double meioDoMapaX = getBattleFieldWidth() / 2;
+		double meioDoMapaY = getBattleFieldHeight() / 2;
+
+		// Calcula a distância atual do nosso robô até o centro da arena
+		double distanciaProCentro = Math.hypot(getX() - meioDoMapaX, getY() - meioDoMapaY);
+
+		if (distanciaProCentro < 200) {
+			// PERIGO: Estamos perto demais do centro!
+			// Corre em linha reta para fugir da confusão
+			setAhead(200 * direcao);
+		} else {
+			// SEGURO: Estamos nas bordas do mapa.
+			// Fica patrulhando ao redor da arena de forma mais silenciosa
+			if (getTime() % 50 == 0) {
+				direcao = -direcao;
+			}
+			setAhead(150 * direcao);
+			setTurnRight(20);
+		}
 	}
 }
