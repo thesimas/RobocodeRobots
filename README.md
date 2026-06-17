@@ -45,16 +45,16 @@ Abaixo, documentamos o comportamento do nosso robô em ação na arena e o fluxo
 
 ### 📍 O Robozinho na Arena
 
-![Radar e Movimentação](imagens/robozinho1v1.png)[cite: 2]
+![Radar e Movimentação](imagens/robozinho1v1.png)
 > *Robozinho operando em combate singular, fazendo a leitura do inimigo pelo radar.*
 
-![Mira Preditiva e Ataque](imagens/robozinho1v2.png)[cite: 2]
+![Mira Preditiva e Ataque](imagens/robozinho1v2.png)
 > *O robô calculando posições e abrindo fogo contra adversários em movimento.*
 
-![Estratégia de Sobrevivência](imagens/robozinho1v3.png)[cite: 2]
+![Estratégia de Sobrevivência](imagens/robozinho1v3.png)
 > *Nosso robô adaptando a estratégia de movimentação ao identificar uma arena com múltiplos inimigos.*
 
 ### 🌳 Nosso Histórico de Versionamento
 
-![Histórico de Commits](imagens/historicoDeCommits.png)[cite: 2]
+![Histórico de Commits](imagens/historicoDeCommits.png)
 > *Print do nosso histórico no GitHub, detalhando a rotina de commits, evolução do projeto e o trabalho da equipe.*
